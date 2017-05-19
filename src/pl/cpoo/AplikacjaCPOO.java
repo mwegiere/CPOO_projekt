@@ -1,18 +1,19 @@
-
+package pl.cpoo;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
-public class main {
+public class AplikacjaCPOO {
 	public static void main(String[] args) {
+		String nazwaWyjsciowa = "output.png";
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		Mat img = Imgcodecs.imread("img/sample.jpg", 1);
+		Mat oryginalneZdjecie = Imgcodecs.imread("img/sample.jpg", 1);
 
 		// Kamil Kacperski
-		WycietySlajd wyciety_slajd = new WycietySlajd(img);
+		WycietySlajd wyciety_slajd = new WycietySlajd(oryginalneZdjecie);
 		Mat wyciety_slajd_out = wyciety_slajd.getImg();
-
+	
 		// Kamil Kacperski
 		SlajdPerspektywa slajd_perspektywa = new SlajdPerspektywa(wyciety_slajd_out);
 		Mat slajd_perspektywa_out = slajd_perspektywa.getImg();
@@ -34,7 +35,8 @@ public class main {
 		SlajdWykrycieWzorca slajd_wykrycie_wzorca = new SlajdWykrycieWzorca(slajd_brak_rozmycia_out);
 		Mat slajd_wykrycie_wzorca_out = slajd_wykrycie_wzorca.getImg();
 
-		Imgcodecs.imwrite("output.png", slajd_wykrycie_wzorca_out);
+		if(Imgcodecs.imwrite(nazwaWyjsciowa, slajd_wykrycie_wzorca_out))
+		System.out.print("Pomyœlnie zapisano wynik do pliku: " + nazwaWyjsciowa);
 	}
 
 }

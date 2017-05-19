@@ -1,17 +1,18 @@
-
+package pl.cpoo;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
-public class WycietySlajd {
+public class SlajdWykrycieWzorca {
+
 	private Mat InImg;
 	private Mat OutImg;
 
 	/*
 	 * konstruktor pobierający obraz
 	 */
-	public WycietySlajd(Mat InImg_) {
+	public SlajdWykrycieWzorca(Mat InImg_) {
 		InImg = InImg_;
 		OutImg = InImg;
 	}
@@ -19,7 +20,7 @@ public class WycietySlajd {
 	/*
 	 * operacja na obrazie
 	 */
-	private Mat WycietySlajdAction() {
+	private Mat SlajdWykrycieWzorcaAction() {
 		OutImg = InImg; // tu operacja na obrazie
 		return OutImg;
 	}
@@ -29,6 +30,7 @@ public class WycietySlajd {
 	 * następny krok toku przetwarzania
 	 */
 	public Mat getImg() {
-		return WycietySlajdAction();
+		return SlajdWykrycieWzorcaAction();
 	}
+
 }

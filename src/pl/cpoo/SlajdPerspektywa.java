@@ -1,10 +1,10 @@
-
+package pl.cpoo;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
-public class SlajdBezSzumu {
+public class SlajdPerspektywa {
 
 	private Mat InImg;
 	private Mat OutImg;
@@ -12,7 +12,7 @@ public class SlajdBezSzumu {
 	/*
 	 * konstruktor pobierający obraz
 	 */
-	public SlajdBezSzumu(Mat InImg_) {
+	public SlajdPerspektywa(Mat InImg_){
 		InImg = InImg_;
 		OutImg = InImg;
 	}
@@ -20,7 +20,7 @@ public class SlajdBezSzumu {
 	/*
 	 * operacja na obrazie
 	 */
-	private Mat SlajdBezSzumuAction() {
+	private Mat SlajdPerspektywaAction() {
 		OutImg = InImg; // tu operacja na obrazie
 		return OutImg;
 	}
@@ -30,7 +30,7 @@ public class SlajdBezSzumu {
 	 * następny krok toku przetwarzania
 	 */
 	public Mat getImg() {
-		return SlajdBezSzumuAction();
+		return SlajdPerspektywaAction();
 	}
 
 }

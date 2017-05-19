@@ -1,10 +1,10 @@
-
+package pl.cpoo;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
-public class SlajdWykrycieWzorca {
+public class SlajdBrakRozmycia {
 
 	private Mat InImg;
 	private Mat OutImg;
@@ -12,7 +12,7 @@ public class SlajdWykrycieWzorca {
 	/*
 	 * konstruktor pobierający obraz
 	 */
-	public SlajdWykrycieWzorca(Mat InImg_) {
+	public SlajdBrakRozmycia(Mat InImg_) {
 		InImg = InImg_;
 		OutImg = InImg;
 	}
@@ -20,7 +20,7 @@ public class SlajdWykrycieWzorca {
 	/*
 	 * operacja na obrazie
 	 */
-	private Mat SlajdWykrycieWzorcaAction() {
+	private Mat SlajdBrakRozmyciaAction() {
 		OutImg = InImg; // tu operacja na obrazie
 		return OutImg;
 	}
@@ -30,7 +30,7 @@ public class SlajdWykrycieWzorca {
 	 * następny krok toku przetwarzania
 	 */
 	public Mat getImg() {
-		return SlajdWykrycieWzorcaAction();
+		return SlajdBrakRozmyciaAction();
 	}
 
 }

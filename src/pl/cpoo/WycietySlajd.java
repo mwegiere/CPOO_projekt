@@ -1,18 +1,17 @@
-
+package pl.cpoo;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
-public class SlajdBrakRozmycia {
-
+public class WycietySlajd {
 	private Mat InImg;
 	private Mat OutImg;
 
 	/*
 	 * konstruktor pobierający obraz
 	 */
-	public SlajdBrakRozmycia(Mat InImg_) {
+	public WycietySlajd(Mat InImg_) {
 		InImg = InImg_;
 		OutImg = InImg;
 	}
@@ -20,8 +19,9 @@ public class SlajdBrakRozmycia {
 	/*
 	 * operacja na obrazie
 	 */
-	private Mat SlajdBrakRozmyciaAction() {
+	private Mat WycietySlajdAction() {
 		OutImg = InImg; // tu operacja na obrazie
+		
 		return OutImg;
 	}
 
@@ -30,7 +30,6 @@ public class SlajdBrakRozmycia {
 	 * następny krok toku przetwarzania
 	 */
 	public Mat getImg() {
-		return SlajdBrakRozmyciaAction();
+		return WycietySlajdAction();
 	}
-
 }
