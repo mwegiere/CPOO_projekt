@@ -1,15 +1,55 @@
 package pl.cpoo;
-
+import pl.cpoo.utils.*;
+import java.io.File;
+import java.util.Vector;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
 public class AplikacjaCPOO {
 	public static void main(String[] args) {
-		String nazwaWyjsciowa = "output.png";
+		String nazwaFolderuWyjsciowego = "output";
+		String nazwaFolderuZrodlowego = "img";
+		//System.out.println(nazwaFolderuZrodlowego);
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		Mat oryginalneZdjecie = Imgcodecs.imread("img/sample.jpg", 1);
+		
+		Mat oryginalneZdjecie;
+		File dir = new File(nazwaFolderuWyjsciowego);
+		dir.mkdir();
+		
+		//Wyszukiwanie obrazkow
+	    //Vector <String> wektorZdjec = new Vector<String>();
+	    LukeFileWalker skanerPlikow=new LukeFileWalker(nazwaFolderuZrodlowego);
+		System.out.println(skanerPlikow.get()); 
+		
+		for (String nazwaPliku:skanerPlikow.get())
+		{
+			
+			oryginalneZdjecie = Imgcodecs.imread(nazwaPliku, 1);
 
+			System.out.println("Aktualnie przetwarzamy plik: " + nazwaPliku);
+			
+			
+		}
+		/*	//Sprawdzenie poziomu ostrosci, wszystkie slajdy w bazie sa nieostre (te na google). 
+			//Dobrze zrobione zdjecie da wiêcej niz 200. Wspomniane zdjecia slajdow to miej niz 50.
+			double poziomOstrosci = SlajdBrakRozmycia.GetSharpness(img);
+			System.out.println("Sharpness " + poziomOstrosci);
+			
+			//Próba zastosowania algorytmu poprawiaj¹cego ostroœæ zale¿nie od jakoœci zdjêcia.
+			if (poziomOstrosci < 30 && poziomOstrosci >20) img=SlajdBrakRozmycia.deblurFilterLR(img, 2, 6);
+			else if (poziomOstrosci <= 20 && poziomOstrosci >10) img=SlajdBrakRozmycia.deblurFilterLR(img, 5, 6);
+			else if (poziomOstrosci <= 10) img=SlajdBrakRozmycia.deblurFilterLR(img, 10, 6);
+			else if (poziomOstrosci >= 30 && poziomOstrosci <= 80)SlajdBrakRozmycia.HP3(img);
+			
+			//zapis do ktalogu wyjsciowego pod taka sama nazwa
+			Imgcodecs.imwrite("output/" + imageName, img);
+		
+		//Scanner scanner = new Scanner(System.in);
+		//scanner.nextLine();
+		
+		
+		
 		// Kamil Kacperski
 		WycietySlajd wyciety_slajd = new WycietySlajd(oryginalneZdjecie);
 		Mat wyciety_slajd_out = wyciety_slajd.getImg();
@@ -36,7 +76,7 @@ public class AplikacjaCPOO {
 		Mat slajd_wykrycie_wzorca_out = slajd_wykrycie_wzorca.getImg();
 
 		if(Imgcodecs.imwrite(nazwaWyjsciowa, slajd_wykrycie_wzorca_out))
-		System.out.print("Pomyœlnie zapisano wynik do pliku: " + nazwaWyjsciowa);
+		System.out.print("Pomyœlnie zapisano wynik do pliku: " + nazwaWyjsciowa);*/
 	}
 
 }
