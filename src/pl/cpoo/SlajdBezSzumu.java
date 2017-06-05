@@ -1,6 +1,4 @@
 package pl.cpoo;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 public class SlajdBezSzumu {
