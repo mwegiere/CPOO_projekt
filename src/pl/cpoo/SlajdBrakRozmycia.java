@@ -15,7 +15,6 @@ import org.opencv.core.Size;
  * Klasa gwarantuje funkcjonalnoœæ:
  * - Filtr górnoprzepustowy o odpowiedzi impulsowej {-1, -1, -1, -1, 9, -1, -1, -1, -1};
  * - Sprawdzenie poziomu ostroœci metod¹ Laplasjanu
- * - Obliczanie FFT (dzia³a tylko dla zerowego kana³u obrazków kolorowych)
  * - Poprawa ostroœci algorytmem LR 
  * @author Kot
  *
@@ -26,13 +25,9 @@ public class SlajdBrakRozmycia {
 	
 	
 	/**
-	 * Stala zawierajaca odpowied impulsow¹ filtru High Pass 
+	 * Stala zawierajaca odpowiedŸ impulsow¹ filtru High Pass 
 	 */
 	private static final float[] impulseResponseHP = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
-	/**
-	 * Stala zawierajaca odpowiedz impulsow¹ filtru w LR
-	 */
-	private static final float[] impulseResponseLR = {0,40,0,0,40,0,0,40,0};
 	/**
 	 * Stala zawierajaca kernel filrtu LR
 	 */
@@ -61,8 +56,8 @@ public class SlajdBrakRozmycia {
 	/**
 	 * Detekcja ostrosci.
 	 * OpenCV port of 'LAPV' algorithm (Pech2000)
-	 * Tak na prawdê to wszystkie wrzucone zdjêcia slajdów s¹ nieostre. Jedne mniej inne bardziej ale s¹ to ró¿nice na
-	 * granicy b³êdu wiêc... no có¿, nie zawsze dzia³a to jak trzeba
+	 * Chodzi o to ¿eby dopasowaæ iloœæ iteracji algorytmu LR do faktycznej ostroœci obrazu
+	 * Wspó³czynnik ostroœci wiêkszy od 80 oznacza, ¿e obraz jest ca³kiem ostry, Mniej => rozmyty
 	 * @param img Przetwarzany obraz
 	 * @return Poziom ostroœci zwykle w przedziale du¿ym - Proponuje ustawiæ próg na 20 (mniejsze do poprawy).
 	 */
@@ -77,7 +72,7 @@ public class SlajdBrakRozmycia {
 	    }
 		catch(Exception e)
 		{
-			System.out.println("Wyj¹tek funkcji Laplacian:  SlajdBrakRozmycia " + e.toString());
+			System.out.println("Wyj?tek funkcji Laplacian:  SlajdBrakRozmycia " + e.toString());
 		}
 	    
 	    
@@ -89,30 +84,32 @@ public class SlajdBrakRozmycia {
 	    
 		in.release();
 		out.release();
+		mu.release();
+		sigma.release();
+		System.gc();
 	    return maxLap;
 	}
 	/**
 	 * Metoda poprawiaj¹ca ostroœæ algorytmem LR. Jest on bardzo skuteczny ale dzia³a raczej powoli (Przynajmniej w Javie).
-	 * Nie wiem kto robi³ openCV pod Jave... Ogromne wycieki pamiêci, której praktycznie nie idzie zwolniæ. Przetwarzanie 
-	 * obrazka o wilkoœci kilkuset KB wymaga ponad 1GB pamiêci?! Lepiej jej nie u¿ywaæ je¿eli to nie jest konieczne.
 	 * Lepiej najpierw zbadaæ ostroœæ metod¹ GetSharpness() i sprawdziæ czy nie wystarczy np. u¿yæ filtru górnoprzepustowego.
 	 * 
 	 * @param img przetwarzany obrazek wejœcie
-	 * @param num_iterations iloœæ iteracji (im mniej tym szybciej, pod Cpp mo¿na waln¹æ nawet 100. Tutaj nawet 10 to du¿o)
+	 * @param num_iterations iloœæ iteracji dla bardziej rozmytych ustawiæ wiêcej (testowane w przedziale 2-50)
 	 * @param sigmaG proponujê wartoœæ np. 6 (wedle uznania)
 	 * @return przetworzony obrazek.
 	 */
 	
 	public static Mat deblurFilterLR(Mat img, int num_iterations, double sigmaG){		
+		
 		img.convertTo(img, CvType.CV_64F);
 		
 		int winSize = (int) (8 * sigmaG + 1) ;
-		Mat Y = img.clone();
+		Mat Y = new Mat();// = img.clone();
 		Mat J1 = img.clone();
 		Mat J2 = img.clone();
 		Mat wI = img.clone(); 
-		Mat imR = img.clone();  
-		Mat reBlurred = img.clone();	
+		Mat imR = new Mat(); 
+		Mat reBlurred = new Mat();	
 
 		Mat T1, T2, tmpMat1, tmpMat2;
 		T1 = new Mat(img.size(), CvType.CV_64F);
@@ -126,16 +123,10 @@ public class SlajdBrakRozmycia {
 		{		
 			if (j>1) {
 				// calculation of lambda
-				tmpMat1.release();
-				tmpMat2.release();
 				Core.multiply(T1, T2, tmpMat1);
 				Core.multiply(T2, T2, tmpMat2);
 				lambda=sum(tmpMat1) / (sum(tmpMat2) + EPSILON);
-				//System.out.println(lambda);
-				// calculation of lambda
-				//return tmpMat1;
 			}
-			Y.release();
 			Core.subtract(J1, J2, Y);
 			Core.multiply(Y, new Scalar(lambda), Y);
 			Core.add(J1, Y, Y);
@@ -144,24 +135,20 @@ public class SlajdBrakRozmycia {
 
 
 			// 1)
-			//Imgproc.GaussianBlur(src, dst, ksize, sigmaX);
-			reBlurred.release();
 		    try{
 		    	Imgproc.GaussianBlur( Y, reBlurred, new Size(winSize,winSize), sigmaG, sigmaG );//applying Gaussian filter 
 		    }
 			catch(Exception e)
 			{
-				System.out.println("Wyj¹tek funkcji Imgproc.GaussianBlur:  SlajdBrakRozmycia " + e.toString());
+				System.out.println("Wyj?tek funkcji Imgproc.GaussianBlur:  SlajdBrakRozmycia " + e.toString());
 			}
 			
-			//reBlurred.setTo(EPSILON , reBlurred <= 0); 
 			setTho(reBlurred,EPSILON);
 			
 			// 2)
-			imR.release();
+			
 			Core.divide(wI, reBlurred, imR);
 			Core.add(imR, new Scalar(EPSILON,EPSILON,EPSILON), imR);
-			//imR = imR + EPSILON;
 
 			// 3)
 			Imgproc.GaussianBlur( imR, imR, new Size(winSize,winSize), sigmaG, sigmaG );//applying Gaussian filter 
@@ -169,25 +156,33 @@ public class SlajdBrakRozmycia {
 			// 4)
 			J2.release();
 			J2 = J1.clone();
+			J1.release();
 			Core.multiply(Y, imR, J1);
 			
 			T2.release();
 			T2 = T1.clone();
+			T1.release();
 			Core.subtract(J1, Y, T1);
 			//T1 = J1 - Y;
 			
+			tmpMat1.release();
+			tmpMat2.release();
+			Y.release();
+			imR.release();
+			reBlurred.release();
+			System.gc();
 		}
-		Y.release();
-		//Mat J1.release();
+		//Y.release();
+		//J1.release();
 		J2.release();
 		wI.release();
-		imR.release();
-		reBlurred.release();	
+		//imR.release();
+		//reBlurred.release();	
 
 		T1.release(); 
 		T2.release(); 
-		tmpMat1.release(); 
-		tmpMat2.release();
+		//tmpMat1.release(); 
+		//tmpMat2.release();
 		
 		System.gc();
 		// output
@@ -246,116 +241,6 @@ public class SlajdBrakRozmycia {
 		return s;
 	}
 	
-	
-	/**
-	 * liczy FFT po kanale zerowym
-	 * @param img wejœcie obrazka
-	 * @return wyjœciowe FFT obrazka
-	 */
-	public static Mat fftizer(Mat img) {
-		System.out.println(1); 
-		ArrayList<Mat> planes=new ArrayList<Mat>();
-		ArrayList<Mat> rgb=new ArrayList<Mat>();
-		Mat padded = optimizeImageDim(img);
-		Core.split(padded, rgb);
-		
-		rgb.get(1).convertTo(rgb.get(1), CvType.CV_32F);
-        planes.add(rgb.get(1));
-        planes.add(Mat.zeros(rgb.get(0).size(), CvType.CV_32F));
-        Mat complexImage = new Mat();
-        // prepare the image planes to obtain the complex image
-        // prepare a complex image for performing the dft
-        
-        Core.merge(planes, complexImage);
-        //img.convertTo(img, CvType.CV_32FC1);
-        //System.out.println(CvType.CV_32FC1);
-        System.out.println(complexImage.type());
-        System.out.println(complexImage.channels());
-        
-
-
-        // dft
-        Core.dft(complexImage, complexImage);
-        Mat magnitude = createOptimizedMagnitude(complexImage);
-        return magnitude;
-	    
-	}
-	
-	
-    private static Mat optimizeImageDim(Mat image)
-    {
-            // init
-            Mat padded = new Mat();
-            // get the optimal rows size for dft
-            int addPixelRows = Core.getOptimalDFTSize(image.rows());
-            // get the optimal cols size for dft
-            int addPixelCols = Core.getOptimalDFTSize(image.cols());
-            // apply the optimal cols and rows size to the image
-            Core.copyMakeBorder(image, padded, 0, addPixelRows - image.rows(), 0, addPixelCols - image.cols(), Core.BORDER_CONSTANT, Scalar.all(0));
-
-            return padded;
-    }
-    
-    /**
-     * Optimize the magnitude of the complex image obtained from the DFT, to
-     * improve its visualization
-     *
-     * @param complexImage
-     *            the complex image obtained from the DFT
-     * @return the optimized image
-     */
-    private static Mat createOptimizedMagnitude(Mat complexImage)
-    {
-            // init
-            ArrayList<Mat> newPlanes = new ArrayList<Mat>();
-            Mat mag = new Mat();
-            // split the comples image in two planes
-            Core.split(complexImage, newPlanes);
-            // compute the magnitude
-            Core.magnitude(newPlanes.get(0), newPlanes.get(1), mag);
-
-            // move to a logarithmic scale
-            Core.add(mag, Scalar.all(1), mag);
-            Core.log(mag, mag);
-            // optionally reorder the 4 quadrants of the magnitude image
-            shiftDFT(mag);
-            // normalize the magnitude image for the visualization since both JavaFX
-            // and OpenCV need images with value between 0 and 255
-            Core.normalize(mag, mag, 0, 255, Core.NORM_MINMAX);
-
-            // you can also write on disk the resulting image...
-            // Highgui.imwrite("../magnitude.png", mag);
-
-            return mag;
-    }
-    
-    /**
-     * Reorder the 4 quadrants of the image representing the magnitude, after
-     * the DFT
-     *
-     * @param image
-     *            the {@link Mat} object whose quadrants are to reorder
-     */
-    private static void shiftDFT(Mat image)
-    {
-            image = image.submat(new Rect(0, 0, image.cols() & -2, image.rows() & -2));
-            int cx = image.cols() / 2;
-            int cy = image.rows() / 2;
-
-            Mat q0 = new Mat(image, new Rect(0, 0, cx, cy));
-            Mat q1 = new Mat(image, new Rect(cx, 0, cx, cy));
-            Mat q2 = new Mat(image, new Rect(0, cy, cx, cy));
-            Mat q3 = new Mat(image, new Rect(cx, cy, cx, cy));
-
-            Mat tmp = new Mat();
-            q0.copyTo(tmp);
-            q3.copyTo(q0);
-            tmp.copyTo(q3);
-
-            q1.copyTo(tmp);
-            q2.copyTo(q1);
-            tmp.copyTo(q2);
-    }
-	
-
 }
+	
+

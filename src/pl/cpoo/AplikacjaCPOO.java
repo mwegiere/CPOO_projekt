@@ -21,7 +21,7 @@ public class AplikacjaCPOO {
 			if (poziomOstrosci < 30 && poziomOstrosci >20) img=SlajdBrakRozmycia.deblurFilterLR(img, 2, 6);
 			else if (poziomOstrosci <= 20 && poziomOstrosci >10) img=SlajdBrakRozmycia.deblurFilterLR(img, 5, 6);
 			else if (poziomOstrosci <= 10) img=SlajdBrakRozmycia.deblurFilterLR(img, 10, 6);
-			else if (poziomOstrosci >= 30 && poziomOstrosci <= 80)SlajdBrakRozmycia.HP3(img);
+			//else if (poziomOstrosci >= 30 && poziomOstrosci <= 80)SlajdBrakRozmycia.HP3(img);
 			return img;
 		
 	}
