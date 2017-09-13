@@ -47,7 +47,6 @@ public class AplikacjaCPOO {
 		// Vector <String> wektorZdjec = new Vector<String>();
 		LukeFileWalker skanerPlikow = new LukeFileWalker(nazwaFolderuZrodlowego);
 		System.out.println(skanerPlikow.get());
-		WycietySlajd wycietySlajd = new WycietySlajd();
 
 		maska = Imgcodecs.imread(System.getProperty("user.dir") + File.separator
 				+ nazwaFolderuMaski + File.separator + "maska.JPG", 1);
@@ -57,37 +56,73 @@ public class AplikacjaCPOO {
 					+ nazwaFolderuZrodlowego + File.separator + nazwaPliku, 1);
 			if (LOGS)
 				System.out.println("Aktualnie przetwarzamy plik: " + nazwaPliku);
-
-			wycietySlajd.wstawZdjecie(oryginalneZdjecie);
-			Mat zdjecieWyciete = wycietySlajd.wykonajEdycje();
-
-			Mat zdjeciePoprawionaOstrosc = poprawaOstrosci(zdjecieWyciete);
-
-			/*// Filip Rak
-			SlajdBezSzumu slajd_bez_szumu = new SlajdBezSzumu(slajd_perspektywa_out);
-			Mat slajd_bez_szumu_out = slajd_bez_szumu.getImg();
-			*/
-			// Maciej Węgierek
-			SlajdRownomierneOswietlenie slajd_rownomierne_oswietlenie = new SlajdRownomierneOswietlenie(
-					zdjeciePoprawionaOstrosc, maska);
-			Mat slajd_rownomierne_oswietlenie_out = slajd_rownomierne_oswietlenie.getImg();
-
-			/*
+			
+		
+			// Filip Rak
+			/*****/
+			Mat slajd_bez_szumu;
+			if (Config.wlacz_slajdBezSzumu) {
+				if (LOGS)
+					System.out.println("---->Usuwanie szumu: " + nazwaPliku);
+				slajd_bez_szumu = new SlajdBezSzumu(oryginalneZdjecie).getImg();
+			} else {
+				slajd_bez_szumu = oryginalneZdjecie;
+			}
+			
 			// Marek Ciesielski
-			SlajdBrakRozmycia slajd_brak_rozmycia = new SlajdBrakRozmycia(slajd_rownomierne_oswietlenie_out);
-			Mat slajd_brak_rozmycia_out = slajd_brak_rozmycia.getImg();
+			/*****/
+			Mat zdjeciePoprawionaOstrosc;
+			if (Config.wlacz_slajdBrakRozmycia) {
+				if(LOGS)
+					System.out.println("---->Wyostrzanie: " + nazwaPliku);
+				zdjeciePoprawionaOstrosc = poprawaOstrosci(slajd_bez_szumu);
+			} else {
+				zdjeciePoprawionaOstrosc = slajd_bez_szumu;
+			}
+			
+			// Kamil Kacperski
+			/*****/
+			Mat zdjecieWyciete;
+			if (Config.wlacz_wycietySlajd) {
+				if (LOGS)
+					System.out.println("---->Wycinanie slajdu: " + nazwaPliku);
+				WycietySlajd wycietySlajd = new WycietySlajd();
+				wycietySlajd.wstawZdjecie(zdjeciePoprawionaOstrosc);
+				zdjecieWyciete = wycietySlajd.wykonajEdycje();
+			} else {
+				zdjecieWyciete = zdjeciePoprawionaOstrosc;
+			}
 
+			// Maciej Węgierek
+			/*****/
+			Mat slajd_rownomierne_oswietlenie_out;
+			if (Config.wlacz_slajdRownOswietlenie) {
+				if (LOGS)
+					System.out.println("---->Rownomierne oswietlenie: " + nazwaPliku);
+				SlajdRownomierneOswietlenie slajd_rownomierne_oswietlenie = new SlajdRownomierneOswietlenie(
+						zdjeciePoprawionaOstrosc, maska);
+				slajd_rownomierne_oswietlenie_out = slajd_rownomierne_oswietlenie.getImg();
+			} else {
+				slajd_rownomierne_oswietlenie_out = zdjecieWyciete;
+			}
+			
 			// Gosia Stawik
-			SlajdWykrycieWzorca slajd_wykrycie_wzorca = new SlajdWykrycieWzorca(slajd_brak_rozmycia_out);
-			Mat slajd_wykrycie_wzorca_out = slajd_wykrycie_wzorca.getImg();
-
-			if(Imgcodecs.imwrite(nazwaWyjsciowa, slajd_wykrycie_wzorca_out))
-			*/
+			/*****/
+			Mat slajd_wykrycie_wzorca_out;
+			if (Config.wlacz_slajdWykrycieWzorca) {
+				if (LOGS)
+					System.out.println("---->Wykrywanie wzorca: " + nazwaPliku);
+				SlajdWykrycieWzorca slajd_wykrycie_wzorca = new SlajdWykrycieWzorca(
+						slajd_rownomierne_oswietlenie_out);
+				slajd_wykrycie_wzorca_out = slajd_wykrycie_wzorca.getImg();
+			} else {
+				slajd_wykrycie_wzorca_out = slajd_rownomierne_oswietlenie_out;
+			}
 			
 			//zapis do ktalogu wyjsciowego pod taka sama nazwa
-			Imgcodecs.imwrite("output/" + nazwaPliku, slajd_rownomierne_oswietlenie_out);
+			Imgcodecs.imwrite("output/" + nazwaPliku, slajd_wykrycie_wzorca_out);
 			if(LOGS)
-			System.out.print("Pomy�lnie zapisano wynik:" + nazwaPliku + " do pliku: " + nazwaFolderuWyjsciowego + "\n");
+				System.out.print("\nOK! Pomy�lnie zapisano wynik:" + nazwaPliku + " do pliku: " + nazwaFolderuWyjsciowego + "\n");
 		}
 	}
 }

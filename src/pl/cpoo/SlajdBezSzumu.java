@@ -23,7 +23,7 @@ public class SlajdBezSzumu {
 
     // parametry algorytmu non local means
     public static int halfPatchSize = 1;
-    public static int halfWindowSize = 5;
+    public static int halfWindowSize = 4;
     public static double sigma = 40;
     public static double filterParam = 0.4;
 
@@ -284,7 +284,7 @@ public class SlajdBezSzumu {
 
         // Główna pętla algorytmu
         IntStream.range(0, imgHeight).parallel().forEach(y -> {
-            System.out.println( String.format("denoising progress: %.2f %%...", 100 * (float) progress / (float) nr_pixels) );
+            System.out.print( String.format("denoising progress: %.2f %%...\r", 100 * (float) progress / (float) nr_pixels) );
             // Utworzenie macierzy pomocniczej dla kawałka obrazu
             double [][][] patchArray = new double[patchSideLen][patchSideLen][channels];
             clear3DoubleArray(patchSideLen, patchSideLen, channels, patchArray);
@@ -371,6 +371,7 @@ public class SlajdBezSzumu {
      */
     private Mat SlajdBezSzumuAction() {
         long startTime = System.nanoTime();
+        progress = 0;
         Mat out = NonLocalMeansDenoising(halfPatchSize, halfWindowSize,
                 sigma, filterParam, InImg);
         long estimatedTime = System.nanoTime() - startTime;
