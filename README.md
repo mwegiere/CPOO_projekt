@@ -9,6 +9,5 @@ Po sklonowaniu pojektu wystarczy do folderu img wrzucić zdjecia do przetestowan
 ## Uruchamianie i kompilacja z terminala:
 
 - wrzucić opencv.jar do CPOO_projekt/lib/
+- wrzucić libopencv_java320.so do CPOO_projekt/lib/ 
 - uruchomić komendę `./run.sh`
-
-
