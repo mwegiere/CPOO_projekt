@@ -57,6 +57,16 @@ public class AplikacjaCPOO {
 			if (LOGS)
 				System.out.println("Aktualnie przetwarzamy plik: " + nazwaPliku);
 			
+			// Marek Ciesielski
+			/*****/
+			Mat zdjeciePoprawionaOstrosc;
+			if (Config.wlacz_slajdBrakRozmycia) {
+				if(LOGS)
+					System.out.println("---->Wyostrzanie: " + nazwaPliku);
+				zdjeciePoprawionaOstrosc = poprawaOstrosci(oryginalneZdjecie);
+			} else {
+				zdjeciePoprawionaOstrosc = oryginalneZdjecie;
+			}
 		
 			// Filip Rak
 			/*****/
@@ -64,20 +74,9 @@ public class AplikacjaCPOO {
 			if (Config.wlacz_slajdBezSzumu) {
 				if (LOGS)
 					System.out.println("---->Usuwanie szumu: " + nazwaPliku);
-				slajd_bez_szumu = new SlajdBezSzumu(oryginalneZdjecie).getImg();
+				slajd_bez_szumu = new SlajdBezSzumu(zdjeciePoprawionaOstrosc).getImg();
 			} else {
-				slajd_bez_szumu = oryginalneZdjecie;
-			}
-			
-			// Marek Ciesielski
-			/*****/
-			Mat zdjeciePoprawionaOstrosc;
-			if (Config.wlacz_slajdBrakRozmycia) {
-				if(LOGS)
-					System.out.println("---->Wyostrzanie: " + nazwaPliku);
-				zdjeciePoprawionaOstrosc = poprawaOstrosci(slajd_bez_szumu);
-			} else {
-				zdjeciePoprawionaOstrosc = slajd_bez_szumu;
+				slajd_bez_szumu = zdjeciePoprawionaOstrosc;
 			}
 			
 			// Kamil Kacperski
@@ -87,10 +86,10 @@ public class AplikacjaCPOO {
 				if (LOGS)
 					System.out.println("---->Wycinanie slajdu: " + nazwaPliku);
 				WycietySlajd wycietySlajd = new WycietySlajd();
-				wycietySlajd.wstawZdjecie(zdjeciePoprawionaOstrosc);
+				wycietySlajd.wstawZdjecie(slajd_bez_szumu);
 				zdjecieWyciete = wycietySlajd.wykonajEdycje();
 			} else {
-				zdjecieWyciete = zdjeciePoprawionaOstrosc;
+				zdjecieWyciete = slajd_bez_szumu;
 			}
 
 			// Maciej Węgierek
