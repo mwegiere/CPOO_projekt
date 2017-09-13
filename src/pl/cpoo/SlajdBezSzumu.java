@@ -1,3 +1,5 @@
+package pl.cpoo;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
@@ -22,7 +24,7 @@ public class SlajdBezSzumu {
     // parametry algorytmu non local means
     public static int halfPatchSize = 1;
     public static int halfWindowSize = 5;
-    public static double sigma = 15.0;
+    public static double sigma = 40;
     public static double filterParam = 0.4;
 
     /*
