@@ -1,12 +1,5 @@
 package pl.cpoo;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.Size;
 import java.lang.Math;
@@ -14,28 +7,27 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import javax.imageio.ImageIO;
+
 
 public class SlajdRownomierneOswietlenie {
 
 	private Mat InImg;
 	private Mat InMask;
-	private Mat OutImg;
 	private Mat OutImgYcbCr;
 	private Mat OutImgRGB;
 	Mat InImgYcbCr;
 	Mat MaskYcbCr;
 
 	/*
-	 * konstruktor pobierajÄ…cy obraz
+	 * konstruktor pobieraj¹cy obraz
 	 */
 	public SlajdRownomierneOswietlenie(Mat InImg_, Mat InMask_) {
-		InImg = InImg_;
-		InMask = InMask_;
-		OutImgYcbCr = InImg;
-		InImgYcbCr = InImg;
-		MaskYcbCr = InMask_;
-		OutImgRGB = InMask_;
+		InImg = InImg_.clone();
+		InMask = InMask_.clone();
+		OutImgYcbCr = InImg_.clone();
+		InImgYcbCr = InImg_.clone();
+		MaskYcbCr = InMask_.clone();
+		OutImgRGB = InMask_.clone();
 	}
 
 	public BufferedImage Mat2BufferedImage(Mat m) {
@@ -171,7 +163,7 @@ public class SlajdRownomierneOswietlenie {
 				double[] DataMaskYcbCr = MaskYcbCr.get(i, j);
 
 				double MaskaY = DataMaskYcbCr[0];
-				double InImgY = DataOriginalYcbCr[0];
+				//double InImgY = DataOriginalYcbCr[0];
 				double roznica = MaskaY - srednia_ciemnego;
 				
 				DataOriginalYcbCr[0] = DataOriginalYcbCr[0] - roznica;
@@ -180,13 +172,20 @@ public class SlajdRownomierneOswietlenie {
 			}
 		
 		Imgproc.cvtColor(OutImgYcbCr, OutImgRGB, Imgproc.COLOR_YCrCb2RGB);
+		
+		InImg.release();
+		InMask.release();
+		OutImgYcbCr.release();
+		InImgYcbCr.release();
+		MaskYcbCr.release();
+		
 		return OutImgRGB;
 
 	}
 
 	/*
-	 * getter poprzez ktÃ³ry przekazujemy obraz do kolejnej klasy realizujÄ…cej
-	 * nastÄ™pny krok toku przetwarzania
+	 * getter poprzez który przekazujemy obraz do kolejnej klasy realizuj¹cej
+	 * nastêpny krok toku przetwarzania
 	 */
 	public Mat getImg() {
 		return SlajdRownomierneOswietlenieAction();

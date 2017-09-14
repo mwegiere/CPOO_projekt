@@ -1,7 +1,5 @@
 package pl.cpoo;
 
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 public class SlajdWykrycieWzorca {
@@ -10,7 +8,7 @@ public class SlajdWykrycieWzorca {
 	private Mat OutImg;
 
 	/*
-	 * konstruktor pobierajÄ…cy obraz
+	 *  konstruktor pobieraj¹cy obraz
 	 */
 	public SlajdWykrycieWzorca(Mat InImg_) {
 		InImg = InImg_;
@@ -26,8 +24,8 @@ public class SlajdWykrycieWzorca {
 	}
 
 	/*
-	 * getter poprzez ktÃ³ry przekazujemy obraz do kolejnej klasy realizujÄ…cej
-	 * nastÄ™pny krok toku przetwarzania
+	 * getter poprzez który przekazujemy obraz do kolejnej klasy realizuj¹cej
+	 * nastêpny krok toku przetwarzania
 	 */
 	public Mat getImg() {
 		return SlajdWykrycieWzorcaAction();

@@ -7,19 +7,19 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
 public class AplikacjaCPOO {
-	// wyï¿½wietlanie komunikatï¿½w
+	// wyœwietlanie  komunikatów
 	public static final boolean LOGS = true;
 
 	static Mat poprawaOstrosci(Mat img) {
 		// Sprawdzenie poziomu ostrosci, wszystkie slajdy w bazie sa nieostre
 		// (te na google).
-		// Dobrze zrobione zdjecie da wiï¿½cej niz 200. Wspomniane zdjecia slajdow
+		// Dobrze zrobione zdjecie da wiêcej niz 200. Wspomniane zdjecia slajdow
 		// to miej niz 50.
 		double poziomOstrosci = SlajdBrakRozmycia.GetSharpness(img);
 		System.out.println("Poziom Ostrosci: " + poziomOstrosci);
 
-		// Prï¿½ba zastosowania algorytmu poprawiajï¿½cego ostroï¿½ï¿½ zaleï¿½nie od
-		// jakoï¿½ci zdjï¿½cia.
+		// Próba zastosowania algorytmu poprawiaj¹cego ostroœæ zale¿na od
+		// jakoœci zdjêcia.
 		if (poziomOstrosci < 30 && poziomOstrosci > 20)
 			img = SlajdBrakRozmycia.deblurFilterLR(img, 2, 6);
 		else if (poziomOstrosci <= 20 && poziomOstrosci > 10)
@@ -34,7 +34,7 @@ public class AplikacjaCPOO {
 
 	public static void main(String[] args) {
 		String nazwaFolderuWyjsciowego = "output";
-		String nazwaFolderuZrodlowego = "img";
+		String nazwaFolderuZrodlowego = "input";
 		String nazwaFolderuMaski = "mask";
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
@@ -49,7 +49,7 @@ public class AplikacjaCPOO {
 		System.out.println(skanerPlikow.get());
 
 		maska = Imgcodecs.imread(System.getProperty("user.dir") + File.separator
-				+ nazwaFolderuMaski + File.separator + "maska.JPG", 1);
+				+ nazwaFolderuMaski + File.separator + "mask.png", 1);
 		
 		for (String nazwaPliku : skanerPlikow.get()) {
 			oryginalneZdjecie = Imgcodecs.imread(System.getProperty("user.dir") + File.separator
@@ -99,7 +99,7 @@ public class AplikacjaCPOO {
 				if (LOGS)
 					System.out.println("---->Rownomierne oswietlenie: " + nazwaPliku);
 				SlajdRownomierneOswietlenie slajd_rownomierne_oswietlenie = new SlajdRownomierneOswietlenie(
-						zdjeciePoprawionaOstrosc, maska);
+						zdjecieWyciete, maska);
 				slajd_rownomierne_oswietlenie_out = slajd_rownomierne_oswietlenie.getImg();
 			} else {
 				slajd_rownomierne_oswietlenie_out = zdjecieWyciete;

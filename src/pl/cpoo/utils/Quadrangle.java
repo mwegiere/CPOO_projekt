@@ -17,7 +17,7 @@ public class Quadrangle {
 	        LEFT = 3;
 
 	    public Line[] lines = new Line[4];
-
+	    public static final boolean DRAWINGS = false;
 	    public Quadrangle() {
 
 	    }
@@ -74,15 +74,41 @@ public class Quadrangle {
 	        }
 
 	        Collections.sort(output);
+	        
+			boolean interwention = true;
+			while(interwention && output.size() >= 4)
+	        {
+	        	interwention=false;
+	       		for(int i = 0; i <4; i++)
+	        	{
+	        		for(int j = i+1 ; j<4; j++)
+	        		{
+	        			if(output.size()>4&&Math.abs(output.get(i).offset.x-output.get(j).offset.x )< 500 && Math.abs(output.get(i).offset.y-output.get(j).offset.y )< 500 )//&& Math.abs(Math.abs(output.get(i).angle)-Math.abs(output.get(j).angle))<1  )
+	        			{
+	        				output.remove(j);
+	        				interwention=true;
+	        				break;
+	        			}
+	        		}
+	        	}	
+	        }
 	        Quadrangle quad = new Quadrangle();
 
-	        for (int o = 0; o < 4; o += 1) {
-	            for (int i = 0; i < 4; i++) {
-	                if (Math.abs(roundAngle(output.get(i).angle - (2 * Math.PI * o / 4))) < Math.PI / 4) {
-	                    quad.lines[o] = output.get(i);
+	        for (int k = 0; k < 4; k += 1) 
+			{
+	        	int i = 0;
+	        	boolean znalezione = false;
+	            while (!znalezione && i < output.size()) 
+				{
+	            	znalezione = false;
+	                if (Math.abs(roundAngle(output.get(i).angle - (2 * Math.PI * k / 4))) < Math.PI / 4) 
+					{
+	                    quad.lines[k] = output.get(i);
+	                    znalezione = true;
 	                }
+	                i++;
 	            }
-	        }
+	         }
 
 
 	        return quad;
@@ -115,21 +141,25 @@ public class Quadrangle {
 	        {
 	        	lines[LEFT] = new Line(new Point(src.cols()-5, src.rows()-5), -1.5) ;
 	        }
-        	System.out.printf("TOP: " +lines[TOP].angle + lines[TOP].offset.toString()+ "\n");
-        	Imgproc.circle(src, lines[TOP].offset, 30, new Scalar(200, 100, 100), 8);
-        	Imgproc.line(src, lines[TOP].get(-5000), lines[TOP].get(5000), new Scalar(200, 100, 100), 8);
-	        
+	        if(DRAWINGS)
+	        {
+	         	Imgproc.circle(src, lines[TOP].offset, 30, new Scalar(200, 100, 100), 8);
+	        	Imgproc.line(src, lines[TOP].get(-5000), lines[TOP].get(5000), new Scalar(200, 100, 100), 8);
+		
+		        Imgproc.circle(src, lines[RIGHT].offset, 30, new Scalar(0, 255, 0), 8);
+		        Imgproc.line(src, lines[RIGHT].get(-5000), lines[RIGHT].get(5000), new Scalar(0, 255, 0), 8);
+	        	
+		        Imgproc.circle(src, lines[BOTTOM].offset, 30, new Scalar(255, 0, 0), 8);
+		        Imgproc.line(src, lines[BOTTOM].get(-5000), lines[BOTTOM].get(5000), new Scalar(255, 0, 0), 8);
+		        
+		        Imgproc.circle(src, lines[LEFT].offset, 30, new Scalar(0, 0, 255), 8);
+	        	Imgproc.line(src, lines[LEFT].get(-5000), lines[LEFT].get(5000), new Scalar(0, 0, 255), 8);
+	        }
+        	
+	        System.out.printf("TOP: " +lines[TOP].angle + lines[TOP].offset.toString()+ "\n");
 	        System.out.printf("RIGHT: " +lines[RIGHT].angle + lines[RIGHT].offset.toString()+ "\n");
-	        Imgproc.circle(src, lines[RIGHT].offset, 30, new Scalar(0, 255, 0), 8);
-	        Imgproc.line(src, lines[RIGHT].get(-5000), lines[RIGHT].get(5000), new Scalar(0, 255, 0), 8);
-	        
 	        System.out.printf("BOTTOM: " +lines[BOTTOM].angle + lines[BOTTOM].offset.toString()+ "\n");
-	        Imgproc.circle(src, lines[BOTTOM].offset, 30, new Scalar(255, 0, 0), 8);
-	        Imgproc.line(src, lines[BOTTOM].get(-5000), lines[BOTTOM].get(5000), new Scalar(255, 0, 0), 8);
-	        
 	        System.out.printf("LEFT: " +lines[LEFT].angle + lines[LEFT].offset.toString()+ "\n");
-	        Imgproc.circle(src, lines[LEFT].offset, 30, new Scalar(0, 0, 255), 8);
-        	Imgproc.line(src, lines[LEFT].get(-5000), lines[LEFT].get(5000), new Scalar(0, 0, 255), 8);
 
 	        double width = src.cols();
 	        double height = src.rows();
@@ -152,6 +182,8 @@ public class Quadrangle {
 	        Imgproc.warpPerspective(src, rotated, warp, size, Imgproc.INTER_LINEAR);
 	        Mat matrix = Imgproc.getRotationMatrix2D(new Point(rotated.cols()/2,rotated.rows()/2),180,1);
 	        Imgproc.warpAffine(rotated,rotated,matrix, rotated.size());
+	        if(DRAWINGS)
+	        return src;
 	        return rotated;
 	    }
 	    

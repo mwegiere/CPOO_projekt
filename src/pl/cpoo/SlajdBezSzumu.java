@@ -2,8 +2,6 @@ package pl.cpoo;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -17,9 +15,9 @@ public class SlajdBezSzumu {
     private static double LUTprecision = 1000.0;
     private static double LUTmax = 30.0;
 
-    // prÃ³g pomijalnie maÅ‚ej liczby double
+    // próg pomijalnie ma³ej liczby double
     private static double TINY_DOUBLE = 0.00000001;
-    private static double LARGE_DOUBLE = 100000000.0;
+    //private static double LARGE_DOUBLE = 100000000.0;
 
     // parametry algorytmu non local means
     public static int halfPatchSize = 1;
@@ -28,14 +26,14 @@ public class SlajdBezSzumu {
     public static double filterParam = 0.4;
 
     /*
-     * konstruktor pobierajÄ…cy obraz
+     * konstruktor pobieraj¹cy obraz
      */
     public SlajdBezSzumu(Mat InImg_) {
         InImg = InImg_;
     }
 
     /**
-     * Inicjuje tablicÄ™ LUT dla exp(-x)
+     * Inicjuje tablicê LUT dla exp(-x)
      */
     private void fillexpLUT() {
         int size = (int) Math.round(LUTmax * LUTprecision);
@@ -45,7 +43,7 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * Zwraca wartoÅ›Ä‡ funkcji exp(-x) dla podanego argumentu na podstawie tabeli LUT
+     * Zwraca wartoœæ funkcji exp(-x) dla podanego argumentu na podstawie tabeli LUT
      * @param x argument
      * @return wartoÅ›Ä‡
      */
@@ -59,10 +57,10 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * WypeÅ‚nia 3-wymiarowÄ… tablicÄ™ wartoÅ›ci double wartoÅ›ciami 0.0
+     * Wype³nia 3-wymiarow¹ tablicê wartoœci double wartoœciami 0.0
      * @param xsize kolumny
      * @param ysize wiersze
-     * @param channels kanaÅ‚y
+     * @param channels kana³y
      * @param array tablica
      */
     private void clear3DoubleArray(int xsize, int ysize, int channels, double[][][] array) {
@@ -76,7 +74,7 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * WypeÅ‚nia 2-wymiarowÄ… tablicÄ™ wartoÅ›ci double wartoÅ›ciami 0.0
+     * Wype³nia 2-wymiarow¹ tablicê wartoœci double wartoœciami 0.0
      * @param xsize kolumny
      * @param ysize wiersze
      * @param array tablica
@@ -90,9 +88,9 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * Inicjalizacja tablicy double wartoÅ›ciami z macierzy
+     * Inicjalizacja tablicy double wartoœciami z macierzy
      * @param array tablica
-     * @param mat macierz wartoÅ›ci
+     * @param mat macierz wartoœci
      */
     private void initDoubleArray(double[][][] array, Mat mat) {
         for (int x = 0; x < mat.width(); x++) {
@@ -112,7 +110,7 @@ public class SlajdBezSzumu {
      * @param cols
      * @param channels
      * @param array tablica
-     * @return nowÄ… macierz
+     * @return now¹ macierz
      */
     private Mat doubleArrayToMat(int cols, int rows, int channels, int type, double[][][] array) {
         Mat newMat = Mat.zeros(rows, cols, CvType.CV_64FC(channels));
@@ -131,15 +129,15 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * Inicjalizuje obraz caÅ‚kowany (zmianna pomocnicza do akceleracji algorytmu),
-     * kaÅ¼dy piksel w tym obraazie jest rÃ³wny
-     * sumie kwadratow wszystkich pikseli z gornego lewego fragmentu obrazu (po wszystkich kanaÅ‚ach),
-     * ktÃ³ry ogranicza ten piksel
+     * Inicjalizuje obraz ca³kowany (zmianna pomocnicza do akceleracji algorytmu),
+     * ka¿dy piksel w tym obraazie jest równy
+     * sumie kwadratow wszystkich pikseli z gornego lewego fragmentu obrazu (po wszystkich kana³ach),
+     * który ogranicza ten piksel
      * @param cols szerokosc obrazu oryginalnego
      * @param rows wysokosc obrazu oryginalnego
      * @param channels ilosc kanalow obrazu oryginalnego
      * @param inImg obraz oryginalny
-     * @param integralImg obraz scaÅ‚kowany
+     * @param integralImg obraz sca³kowany
      */
     private void prepareSSI2Image(int cols, int rows,
                                   int channels,
@@ -177,16 +175,16 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * Oblicza sumÄ™ kwadratÃ³w rÃ³Å¼nic wartoÅ›ci pikseli w kawaÅ‚ku
-     * obrazu po wszystkich kanaÅ‚ach obrazu
-     * @param x wspÃ³Å‚rzÄ™dna x Å›rodka kawaÅ‚ka 1
-     * @param y wspÃ³Å‚rzÄ™dna y Å›rodka kawaÅ‚ka 1
-     * @param i wspÃ³Å‚rzÄ™dna x Å›rodka kawaÅ‚ka 2
-     * @param j wspÃ³Å‚rzÄ™dna y Å›rodka kawaÅ‚ka 2
-     * @param halfPatchSize poÅ‚owa boku kawaÅ‚ka
-     * @param channels ilosc kanaÅ‚Ã³w
+     * Oblicza sumê kwadratów ró¿nic wartoœci pikseli w kawa³ku
+     * obrazu po wszystkich kana³ach obrazu
+     * @param x wspó³rzêdna x œrodka kawa³ka 1
+     * @param y wspó³rzêdna y œrodka kawa³ka 1
+     * @param i wspó³rzêdna x œrodka kawa³ka 2
+     * @param j wspó³rzêdna y œrodka kawa³ka 2
+     * @param halfPatchSize po³owa boku kawa³ka
+     * @param channels ilosc kana³ów
      * @param inImgArr obraz wejsciowy
-     * @return suma kwadratÃ³w rÃ³Å¼nic
+     * @return suma kwadratów ró¿nic
      */
     private double patchDiff(int x, int y,
                              int i, int j,
@@ -210,13 +208,13 @@ public class SlajdBezSzumu {
     }
 
     /**
-     * Dodaje wartoÅ›Ä‡ z kawaÅ‚ka o pozycji x, y macierzy wejÅ›ciowej do wartoÅ›ci
-     * kawaÅ‚ka o pozycji x, y macierzy wyjÅ›ciowej dla wszystkich kanaÅ‚Ã³w
-     * @param halfPatchSize poÅ‚owa rozmiaru kawaÅ‚ka
-     * @param channels iloÅ›Ä‡ kanaÅ‚Ã³w
-     * @param weight waga wartoÅ›ci
-     * @param inImgArr macierz wejÅ›ciowa
-     * @param patchArr macierz kawaÅ‚ka
+     * Dodaje wartoœæ z kawa³ka o pozycji x, y macierzy wejœciowej do wartoœci
+     * kawa³ka o pozycji x, y macierzy wyjœciowej dla wszystkich kana³ów
+     * @param halfPatchSize po³owa rozmiaru kawa³ka
+     * @param channels iloœæ kana³ów
+     * @param weight waga wartoœci
+     * @param inImgArr macierz wejœciowa
+     * @param patchArr macierz kawa³ka
      */
     private void addToPatch(int x, int y,
                             int halfPatchSize,
@@ -237,11 +235,11 @@ public class SlajdBezSzumu {
     /**
      * Algorytm odszumiania non-local means denoising
      *
-     * @param halfPatchSize poÅ‚owa rozmiaru fragmentu szukanego
-     * @param halfWindowSize poÅ‚owwa rozmiaru okna przeszukiwania
+    * @param halfPatchSize po³owa rozmiaru fragmentu szukanego
+     * @param halfWindowSize po³owwa rozmiaru okna przeszukiwania
      * @param sigma parametr szumu
      * @param filterParam parametr filtrowania
-     * @param inImg obraz wejÅ›ciowy
+     * @param inImg obraz wejœciowy
      * @return obraz odszumiony
      */
     private Mat NonLocalMeansDenoising(int halfPatchSize,
@@ -251,9 +249,10 @@ public class SlajdBezSzumu {
                               Mat inImg) {
         // pixels nr
         int nr_pixels = inImg.width() * inImg.height();
-        Random rand = new Random();
+        //Random rand = new Random();
 
-        // inicjalizacja parametrÃ³w algorytmu
+
+        // inicjalizacja parametrów algorytmu
         int channels = inImg.channels();
         double sigma2 = sigma * sigma;
         double H = filterParam * sigma;
@@ -266,38 +265,38 @@ public class SlajdBezSzumu {
         // inicjalizacja tablicy LUT
         fillexpLUT();
 
-        // alokacja pamiÄ™ci na obraz wejsciowy
+        // alokacja pamiêci na obraz wejsciowy
         double [][][] inImgArray = new double[imgWidth][imgHeight][channels];
         initDoubleArray(inImgArray, inImg);
 
-        // inicjalizacja obrazu scaÅ‚kowanego kwadratowo
+        // inicjalizacja obrazu sca³kowanego kwadratowo
 //        double SSI2_ImgArray[][] = new double[imgWidth][imgHeight];
 //        prepareSSI2Image(imgWidth, imgHeight, channels, inImgArray, SSI2_ImgArray);
 
-        // alokacja pamiÄ™ci na obraz odszumiony
+        // alokacja pamiêci na obraz odszumiony
         double [][][] outImgArray = new double[imgWidth][imgHeight][channels];
         clear3DoubleArray(imgWidth, imgHeight, channels, outImgArray);
 
-        // Utworzenie macierzy pomocniczej zliczajÄ…cej
+        // Utworzenie macierzy pomocniczej zliczaj¹cej
         double [][] counterArray = new double[imgWidth][imgHeight];
         clear2DoubleArray(imgWidth, imgHeight, counterArray);
 
-        // GÅ‚Ã³wna pÄ™tla algorytmu
+        // G³ówna pêtla algorytmu
         IntStream.range(0, imgHeight).parallel().forEach(y -> {
             System.out.print( String.format("denoising progress: %.2f %%...\r", 100 * (float) progress / (float) nr_pixels) );
-            // Utworzenie macierzy pomocniczej dla kawaÅ‚ka obrazu
+            // Utworzenie macierzy pomocniczej dla kawa³ka obrazu
             double [][][] patchArray = new double[patchSideLen][patchSideLen][channels];
             clear3DoubleArray(patchSideLen, patchSideLen, channels, patchArray);
 
             for (int x = 0; x < imgWidth; x++) {
                 progress++;
-                // Ustalenie rozmiaru kawaÅ‚ka
+             // Ustalenie rozmiaru kawa³ka
                 int halfPathSize0 = Math.min(halfPatchSize,
                                     Math.min(imgWidth - 1 - x,
                                     Math.min(imgHeight - 1 - y,
                                     Math.min(x, y))));
 
-                // Ustalenie rozmiarÃ³w przeszukiwanego okna
+                // Ustalenie rozmiarów przeszukiwanego okna
                 int imin = Math.max(x - halfWindowSize, halfPathSize0);
                 int jmin = Math.max(y - halfWindowSize, halfPathSize0);
 
@@ -323,13 +322,13 @@ public class SlajdBezSzumu {
 
                             sumWeights += weight;
 
-                            // Dodaj waÅ¼ona wartoÅ›Ä‡ z obrazka wejsciowego do macierzy kawaÅ‚ka
+                            // Dodaj wa¿ona wartoœæ z obrazka wejsciowego do macierzy kawa³ka
                             addToPatch(i, j, halfPathSize0, channels, weight, inImgArray, patchArray);
                         }
                     }
                 } // end of i, j loop
 
-                // Dodaj maksymalnie waÅ¼ona wartoÅ›Ä‡ z obrazka wejsciowego na wyjsciowy
+                // Dodaj maksymalnie wa¿ona wartoœæ z obrazka wejsciowego na wyjsciowy
                 addToPatch(x, y, halfPathSize0, channels, maxWeight, inImgArray, patchArray);
 
                 sumWeights += maxWeight;
@@ -388,8 +387,8 @@ public class SlajdBezSzumu {
     }
 
     /*
-     * getter poprzez ktÃ³ry przekazujemy obraz do kolejnej klasy realizujÄ…cej
-     * nastÄ™pny krok toku przetwarzania
+     * getter poprzez który przekazujemy obraz do kolejnej klasy realizuj¹cej
+     * nastêpny krok toku przetwarzania
      */
     public Mat getImg() {
         return SlajdBezSzumuAction();

@@ -12,7 +12,7 @@ import pl.cpoo.utils.Quadrangle;
 
 public class WycietySlajd {
 	
-	// testy poprzez rysowania 
+	// wlaczenie modulu do testow rysowania na obrazku
 	public static final boolean DRAWINGS = false;
 	
 	private Mat obrazWejsciowy;
@@ -39,7 +39,7 @@ public class WycietySlajd {
 		this.obrazRoboczy = null;
 		this.obrazRoboczy = null;
 		this.obrazProgowanyGlobalny = null;
-		this.contours  = new ArrayList<MatOfPoint>(); ;
+		this.contours  = new ArrayList<MatOfPoint>(); 
 	}
 	
 	
@@ -88,19 +88,28 @@ public class WycietySlajd {
 	        	najwiekszyKontur = wrapper;
 	        }
 	    }
-	    contours.clear();
+
 	    
 	    // Malujemy kontury jesli chcemy sprawdziæ jak wygl¹daj¹
 	    if(DRAWINGS)
 	    {
-	    	obrazTestowy = new Mat(obrazWejsciowy.size(), Imgproc.COLOR_RGB2GRAY);
-			 for (int i = 0; i < contours.size(); i++) {
-			        Imgproc.drawContours(obrazTestowy, contours, i, new Scalar(0, 0, 0), -1);
-			 }
+			ArrayList<MatOfPoint> najw  = new ArrayList<MatOfPoint>(); 
+	    	najw.add(najwiekszyKontur);
+	    	//obrazTestowy = new Mat(obrazWejsciowy.rows(), obrazWejsciowy.cols(), Imgproc.COLOR_RGB2GRAY);
+			for (int i = 0; i < najw.size(); i++) 
+			{
+			     Imgproc.drawContours(obrazTestowy, najw, i, new Scalar(0, 0, 0), -1);
+			}
+			 najw.clear();
 			 contours.clear();
 			 return obrazTestowy;
 	    }
+	    contours.clear();
 	 
+	    obrazTestowy.release();
+		obrazProgowanyGlobalny.release();
+		hierarchiaKontur.release();
+		obrazRoboczy.release();
 	    
 	    //Druga czeœæ to znalezienie 4 punktów do wyciêcia prostok¹ta i zmiany jego perspektywy
 	    //Tworzymy czworok¹t z najwiêkszego konturu;
